@@ -1,5 +1,6 @@
 
 import { Component, OnInit } from '@angular/core';
+import { AccountService } from './account/account.service';
 import { BasketService } from './basket/basket.service';
 
 
@@ -16,18 +17,37 @@ export class AppComponent implements OnInit {
 
   //injektiranje na httpClient
   //moze do nego da pristapuvame so this keyword
-  constructor(private basketService: BasketService) {}
+  constructor(private basketService: BasketService,
+    private accountService: AccountService) {}
 
   ngOnInit(): void {
-     const basketId = localStorage.getItem('basket_id');
-     if(basketId) {
-       this.basketService.getBasket(basketId).subscribe((r)=>{
-         console.log('initialized basket')
-       },
-       error=>{
-         console.log(error)
-       })
-     }
+    this.loadBasket();
+    this.loadCurrentUser();
+  }
+
+  loadBasket() {
+    const basketId = localStorage.getItem('basket_id');
+    if(basketId) {
+      this.basketService.getBasket(basketId).subscribe((r)=>{
+        console.log('initialized basket')
+      },
+      error=>{
+        console.log(error)
+      })
+    }
+  }
+
+  loadCurrentUser() {
+    const token = localStorage.getItem('token');
+   
+      this.accountService.loadCurrentUser(token!).subscribe(()=>{
+        console.log('loaded user');
+        
+      },err=>{
+        console.log(err);
+        
+      })
+    
   }
 
 }
